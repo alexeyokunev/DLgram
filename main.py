@@ -14,13 +14,10 @@ import PIL
 import io
 import numpy as np 
 
-TOKEN = '1658858183:AAHzCZblnqKVm8iPuJGKiQokIrxUosw5vLA'
-chat_id = 848203640 #particlesnn_client
-
 class Bot():
     def __init__(self, TOKEN, chat_id):
         self.bot = telebot.TeleBot(TOKEN, parse_mode=None)
-        self.chat_id = chat_id
+        self.chat_id = None
         self.is_busy = False
         self.name = None
         self.train_json = None
