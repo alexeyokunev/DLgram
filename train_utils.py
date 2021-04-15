@@ -103,7 +103,7 @@ def modify_cfg(cfg, ckpt_path, dataset_name, path_to_train_coco, num_epochs):
     # The original learning rate (LR) is set for 8-GPU training.
     # We divide it by 8 since we only use one GPU
     # and multiply by number of gpus
-    cfg.optimizer.lr = 0.02 * 2/ cfg.data.samples_per_gpu * len(list(cfg.gpu_ids)) / 8 
+    cfg.optimizer.lr = 0.01 * 2/ cfg.data.samples_per_gpu * len(list(cfg.gpu_ids)) / 8 
     cfg.lr_config.warmup = None
     cfg.log_config.interval = 1
 

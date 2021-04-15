@@ -12,6 +12,13 @@ import io
 
 
 class Bot:
+    DEFAULT_ARGS = dict(n='stock',
+                             t=0.01,
+                             e=20,
+                             a=8,
+                             r=1.5,
+                             m=0
+                             )
     def __init__(self, TOKEN):
         self.TOKEN = TOKEN
         self.bot = telebot.TeleBot(self.TOKEN, parse_mode=None)
@@ -24,13 +31,7 @@ class Bot:
         self.path_to_img = None
         self.text = None
         self.msg_json = None
-        self.args = dict(n='stock',
-                         t=0.3,
-                         e=100,
-                         a=1,
-                         r=1.5,
-                         m=0
-                         )
+        self.args = self.DEFAULT_ARGS.copy()
         self.args_str = ''
         
     def _get_file(self, doc):
@@ -174,7 +175,6 @@ class Bot:
     def _handle_text(self, message):
         self.msg_json = message.json
         self.chat_id = self.msg_json['chat']['id']
-#        self._set_args(message.text)
         
     def _set_args(self, text):
         if text.startswith('-'):
@@ -186,13 +186,7 @@ class Bot:
                 if key in self.args.keys():
                     self.args[key] = value
         else:
-            self.args = dict(n='stock',
-                             t=0.3,
-                             e=100,
-                             a=1,
-                             r=1.5,
-                             m=0
-                             )
+            self.args = self.DEFAULT_ARGS.copy()
         self.bot.send_message(self.chat_id, f'set args {self.args}')
     
     def _get_args_str(self):
