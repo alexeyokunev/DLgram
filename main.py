@@ -13,12 +13,13 @@ import io
 
 class Bot:
     DEFAULT_ARGS = dict(n='stock',
-                             t=0.01,
-                             e=20,
-                             a=8,
-                             r=1.5,
-                             m=0
-                             )
+                        t=0.01,
+                        e=20,
+                        a=8,
+                        r=1.5,
+                        m=0,
+                        g=0
+                       )
     def __init__(self, TOKEN):
         self.TOKEN = TOKEN
         self.bot = telebot.TeleBot(self.TOKEN, parse_mode=None)
@@ -77,9 +78,10 @@ class Bot:
             net = self.args['n']
             model_dir = osp.join('../data', net)
             if osp.isdir(model_dir):
-                self.bot.send_message(self.chat_id, 
-                                      f'you\'ve already trained the dataset. ask admin to help retrain')
-            else:
+                cmd_str = f'rm -R {model_dir}'
+                self.p = subprocess.run(cmd_str.split(), capture_output=True)
+            
+            if True: #TODO rewrite this piece of code
                 os.makedirs(model_dir)
                 self.bot.send_message(self.chat_id, 
                                       'Wait, please. I\'m training the model ...')
@@ -98,13 +100,12 @@ class Bot:
                 self.args_str = f'python3 train.py {self._get_args_str()}' 
                 self.p = subprocess.run(self.args_str.split(), capture_output=True)
                 if self.p.returncode == 0:
-                    self.bot.send_message(self.chat_id, 'Training completed')
                     test_dir = osp.join('../data', net, 'test')
                     path_to_res = osp.join(test_dir, net + '.' + 'json')
                     doc = open(path_to_res, 'rb')
                     self.bot.send_document(self.chat_id, doc, 
-                                           caption=f'Type \"{net}\" in the image caption to use \
-                                                     the net for inference')
+                        caption=f'Training completed. Type \"{net}\" in the image \
+                                caption to use the net for inference')
 
                     dst_stat_name = osp.join(test_dir, net + '.csv')
                     with open(dst_stat_name, 'r') as f:
@@ -114,10 +115,15 @@ class Bot:
                     path_to_res_img = osp.join(test_dir, res_img_name)
                     photo = open(path_to_res_img, 'rb')
                     self.bot.send_photo(self.chat_id, photo, caption=f'found {stat}')
-
                 else:
                     print(self.p)
                     self.bot.send_message(self.chat_id, f'error with processing {self.train_json}')
+                    
+                if self.args['g']:
+                    path_to_res_zip = osp.join(model_dir, 'mAP.zip')
+                    doc = open(path_to_res_zip, 'rb')
+                    self.bot.send_document(self.chat_id, doc, caption=f'mAP for Nanopartciles test dataset')
+
 
         if file_name_ext in ('bmp', 'jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'png'):
             if 'caption' in self.msg_json.keys():
@@ -148,10 +154,10 @@ class Bot:
                     path_to_res_json = osp.join(test_dir, file_name_base + '.' + 'json')
                     doc = open(path_to_res_json, 'rb')
                     self.bot.send_document(self.chat_id, doc, caption=f'predicted using {self.args}')
-
                 else:
                     print(self.p)
                     self.bot.send_message(self.chat_id, f'error with processing {self.file_name}')
+                    
         # set args to default values
         self._set_args('')
         # ready to accept new requests

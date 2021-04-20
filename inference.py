@@ -76,6 +76,7 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--ratio", default='1.5', help="ration of crop size to bounding box size")
     parser.add_argument("-a", "--augment", default='1', help="number of augmented crops")
     parser.add_argument("-m", "--merge", default='0', help="merge classes")
+    parser.add_argument("-g", "--gt", default='0', help="calculate mAP for test dataset")
 
 
     args = parser.parse_args()
@@ -84,5 +85,6 @@ if __name__ == '__main__':
     args.ratio = float(args.ratio)
     args.augment = int(args.augment)
     args.merge = int(args.merge)
+    args.gt = int(args.gt)
     
-    inference(args.path, args.net, args.thresh, args.merge)
+    inference(args.path, args.net, args.thresh, args.merge)        

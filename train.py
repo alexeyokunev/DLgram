@@ -5,24 +5,26 @@ import os.path as osp
 import shutil
 import cv2
 import numpy as np
-
-
+import subprocess
+    
 from preprocess import extract_imgs_from_labelme
 from preprocess import preprocess
 from train_utils import train_loop
 
 from predict import predict
 from inference import inference
+from mAP import mAP
 
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--net", help="unique name for network model, \"sph\" for spheres, \"stm\" for stm etc")
+    parser.add_argument("-n", "--net", help="unique name for network model")
     parser.add_argument("-t", "--thresh", default='0.3', help="prediction's threshold probability")
     parser.add_argument("-e", "--epochs", default='100', help="number of training epochs")
     parser.add_argument("-r", "--ratio", default='1.5', help="ration of crop size to bounding box size")
     parser.add_argument("-a", "--augment", default='1', help="number of augmented crops")
     parser.add_argument("-m", "--merge", default='0', help="merge classes")
+    parser.add_argument("-g", "--gt", default='0', help="calculate mAP for test dataset")
 
     args = parser.parse_args()
     args.thresh = float(args.thresh)
@@ -30,6 +32,7 @@ if __name__ == '__main__':
     args.ratio = float(args.ratio)
     args.augment = int(args.augment)
     args.merge = int(args.merge)
+    args.gt = int(args.gt)
 
     #specify here the actual folder with data
     # labelme annotations file
@@ -78,3 +81,8 @@ if __name__ == '__main__':
     shutil.copyfile(path_to_img, dst_img_path)
     
     inference(dst_img_path, args.net, args.thresh, args.merge)
+    
+    if args.gt:
+        self_coco = args.net.split('_')[0] + '.json'
+        coco_for_mAP = [self_coco] + ['test.json', '100.json', '101.json', '102.json']
+        mAP(model_dir, coco_for_mAP)

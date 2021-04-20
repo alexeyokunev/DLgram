@@ -59,9 +59,9 @@ def modify_cfg(cfg, ckpt_path, dataset_name, path_to_train_coco, num_epochs):
     cfg.data.val.ann_file = train_coco_name
     cfg.data.val.img_prefix = 'images'
 
-    cfg.data.test.type = dataset_name
-    cfg.data.test.data_root = root_dir
-    cfg.data.test.ann_file = ''
+    cfg.data.test.type = 'Nanoparticles'
+    cfg.data.test.data_root = '/home/PycharmProjects/data/STM7395767'
+    cfg.data.test.ann_file = 'test.json'
     cfg.data.test.img_prefix = ''
 
     # modify num classes of the model in box head
@@ -82,10 +82,12 @@ def modify_cfg(cfg, ckpt_path, dataset_name, path_to_train_coco, num_epochs):
     w, h = train_coco['images'][0]['width'], train_coco['images'][0]['height']
     img_size = w * h
     cfg.train_pipeline[2]['img_scale'] = w, h
-    cfg.test_pipeline[1]['img_scale'] = w, h
+    cfg.test_pipeline[1]['img_scale'] = 512, 512
     cfg.data.train.pipeline[2]['img_scale'] = w, h
     cfg.data.val.pipeline[1]['img_scale'] = w, h
-    cfg.data.test.pipeline[1]['img_scale'] = w, h
+    cfg.data.test.pipeline[1]['img_scale'] = 512, 512
+    
+    
     
     # Set seed thus the results are more reproducible
     cfg.seed = 0

@@ -284,8 +284,13 @@ def crops2coco(coco, imgs, src_img_names, imgs_points, imgs_cats, model_dir, rat
         for crop in crop_whs:
             # make random crop of fix size within specified area
             min_x, min_y, w, h = crop.astype(np.int32).tolist()
-            l = min_x + np.random.randint(w - fix_w)
-            t = min_y + np.random.randint(h - fix_h)
+            if w>fix_w and h>fix_h:
+                l = min_x + np.random.randint(w - fix_w)
+                t = min_y + np.random.randint(h - fix_h)
+            else:
+                l = min_x
+                t = min_y
+
             crop_tlbr = np.asarray([t,l,t+fix_h,l+fix_w])
             
             # name to save croppped image                       
